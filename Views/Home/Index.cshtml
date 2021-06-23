@@ -3,3 +3,12 @@
 }
 
 <a asp-action="ExportExcel" asp-controller="Home">Export Excel</a>
+
+<div style="margin-top:30px;" id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="6000">
+    <div class="container ">
+        <form method="post" asp-controller="Home" asp-action="Import" enctype="multipart/form-data">
+            <input type="file" name="file" />
+            <button type="submit">Import from Excel</button>
+        </form>
+    </div>
+</div>

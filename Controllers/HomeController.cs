@@ -1,7 +1,9 @@
 ﻿using ASPExportExcel.Models;
 using ClosedXML.Excel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -25,6 +27,37 @@ namespace ASPExportExcel.Controllers
         {
             return View();
         }
+
+        public async Task<List<Countries>> Import(IFormFile file)
+        {
+            var list = new List<Countries>();
+            using (var stream =new MemoryStream ())
+            {
+
+                await file.CopyToAsync(stream);
+                using(var package =new ExcelPackage(stream))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                    var rowcount = worksheet.Dimension.Rows;
+                    for (int row = 2; row < rowcount; row++)
+                    {
+                        list.Add(new Countries
+                        {
+                            CountryID = worksheet.Cells[row, 1].Value.ToString().Trim(),
+                            CountryName = worksheet.Cells[row, 2].Value.ToString().Trim(),
+                            TwoCharCountryCode = worksheet.Cells[row, 3].Value.ToString().Trim(),
+                            ThreeCharCountryCode = worksheet.Cells[row, 4].Value.ToString().Trim(),
+
+                        }) ;
+
+                    }
+                }
+                return list; 
+            }
+
+        }
+
+
 
         public IActionResult Privacy()
         {
@@ -88,12 +121,7 @@ namespace ASPExportExcel.Controllers
                         "Student.xlsx"
                         );
                 }    
-
-
-
-
             }
-            
         }
     }
 
